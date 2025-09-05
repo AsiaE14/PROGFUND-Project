@@ -37,8 +37,28 @@ void search(){
 }
 int main(){
    int csa,caser,running =1 ;
-//head//
-     printf("+++++++++++++++++WelcomeTo-ProjectManagementInformationSystem++++++++++++++++++++++++++++\n");
+
+
+
+    FILE *data = fopen("data.csv", "w");
+    if (data == NULL) {
+        printf("Error: Could not open file.\n");
+        return 1;
+    }
+
+    // Write data to the CSV file
+    fprintf(data, "Name,Start,End,Status\n");  // Header row
+    fprintf(data, "A,05/21//23,04/29/24,Done\n");
+    fprintf(data, "B,07/02//24,07/21/26,InProcess\n");
+    fprintf(data, "C,05/21//23,07/21/23,Done\n");
+
+    // Close the file
+    fclose(data);
+
+    printf("CSV file created successfully!\n ");
+    return 0;
+//menu//
+/*     printf("+++++++++++++++++WelcomeTo-ProjectManagementInformationSystem++++++++++++++++++++++++++++\n");
    while (running)
 
     {
@@ -90,7 +110,7 @@ int main(){
       printf("Exit-Program");
    
 
-
+*/
 
 
     return 0;
