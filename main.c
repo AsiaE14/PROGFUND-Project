@@ -1,42 +1,90 @@
 #include<stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_LINE_LENGTH 1024
+#define DELIMITER ","
 
 
 
-void regis(){
-printf("InProcess\n");
+int regis(){
+
+    FILE *data = fopen("data.csv", "w");
+char name[100];    
+char start[100];    
+char end[100];    
+char pocess[100];    
+
+
+ printf("Project-Name: ");
+    scanf("%s", name);
+    printf("Start-Date: ");
+    scanf("%s", start);
+    printf("End-Date: ");
+    scanf("%s", end);
+    printf("Status: ");
+    scanf("%s", pocess);
+   
+
+ data = fopen ("meteo.csv", "a");
+    fprintf(data, "%s, %s, %s, %s\n",name,start,end,pocess); //I think there's something wrong here too...
+
+    fclose(data);
+    printf("Information edited successfully");
+
+
 }
-void Sall(){
-printf("InProcess\n");
+
+int Sall(){
+
+FILE *file = fopen("data.csv", "r"); // Open the CSV file in read mode
+    if (file == NULL) {
+        perror("Error opening file");
+        return EXIT_FAILURE;
+    }
+
+    
+    char line[1024]; // Buffer to store each line
+    while (fgets(line, sizeof(line), file)) { // Read each line
+        char *token = strtok(line, ","); // Split the line by commas
+        while (token) {
+            printf("%s ", token); // Print each value
+            token = strtok(NULL, ",");
+        }
+        printf("\n");
+    }
+
+    fclose(file); // Close the file
+    return EXIT_SUCCESS;
+
+
+    
 }
+
+
+
+//search.....
+
 void search(){
+    
+   
 
-    printf("InProcess\n");
-     /*printf("if else : 1   switch case : 2\n");
-        scanf("%d",&csa);
-          switch (csa)
-       {
-       case 1:
-        grade();
-        break;
-        
-        case 2:
-        printf("\nin progess");
-        break;
-       
-       default:
-        break;
+   
 
-       }
-       
-       
-       */ 
-
-
-        
+    printf("inpro\n");
+   
 
 }
+
+
+
+// MAIN
 int main(){
    int csa,caser,running =1 ;
+    const char *input_file = "data.csv";
+    const char *output_file = "data.csv";
+    int column_to_edit = 1; // Column index to edit (0-based)
+    const char *new_value = "UpdatedValue";
 
 
 
@@ -47,18 +95,16 @@ int main(){
     }
 
     // Write data to the CSV file
-    fprintf(data, "Name,Start,End,Status\n");  // Header row
-    fprintf(data, "A,05/21//23,04/29/24,Done\n");
-    fprintf(data, "B,07/02//24,07/21/26,InProcess\n");
-    fprintf(data, "C,05/21//23,07/21/23,Done\n");
+   
+   
 
     // Close the file
-    fclose(data);
+
 
     printf("CSV file created successfully!\n ");
-    return 0;
+    
 //menu//
-/*     printf("+++++++++++++++++WelcomeTo-ProjectManagementInformationSystem++++++++++++++++++++++++++++\n");
+     printf("+++++++++++++++++WelcomeTo-ProjectManagementInformationSystem++++++++++++++++++++++++++++\n");
    while (running)
 
     {
@@ -110,7 +156,6 @@ int main(){
       printf("Exit-Program");
    
 
-*/
 
 
     return 0;
