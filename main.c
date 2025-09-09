@@ -7,7 +7,7 @@
 
 
 
-int regis(){
+char regis(){
 
     FILE *data = fopen("data.csv", "w");
 char name[100];    
