@@ -9,7 +9,7 @@
 
 char regis(){
 
-    FILE *data = fopen("data.csv", "w");
+    FILE *data = fopen("data.csv", "a");
 char name[100];    
 char start[100];    
 char end[100];    
@@ -26,7 +26,7 @@ char pocess[100];
     scanf("%s", pocess);
    
 
- data = fopen ("meteo.csv", "a");
+// data = fopen ("data.csv", "a");
     fprintf(data, "%s, %s, %s, %s\n",name,start,end,pocess); //I think there's something wrong here too...
 
     fclose(data);
