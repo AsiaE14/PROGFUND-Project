@@ -11,7 +11,7 @@ void boom(){
     printf("All data deleted!");
 
 }
-
+//register
 char regis(){
 
     FILE *data = fopen("data.csv", "a");
@@ -31,13 +31,24 @@ char pocess[100];
     scanf("%s", pocess);
    
 
-// data = fopen ("data.csv", "a");
-    fprintf(data, "%s, %s, %s, %s\n",name,start,end,pocess); //I think there's something wrong here too...
+
+   // fprintf(data, "%s, %s, %s, %s\n",name,start,end,pocess); //I think there's something wrong here too...
 
     fclose(data);
     printf("Information edited successfully");
 
 
+}
+
+
+
+
+//short and show 
+void trim_newline(char *s) {
+    size_t n = strlen(s);
+    while (n > 0 && (s[n-1] == '\n' || s[n-1] == '\r')) {
+        s[--n] = '\0';
+    }
 }
 
 int Sall(){
@@ -49,7 +60,8 @@ FILE *file = fopen("data.csv", "r"); // Open the CSV file in read mode
     }
 
     
-    char line[1024]; // Buffer to store each line
+    char line[MAX_LINE_LENGTH];
+    int is_header = 1;
     while (fgets(line, sizeof(line), file)) { // Read each line
         char *token = strtok(line, ","); // Split the line by commas
         while (token) {
@@ -59,12 +71,41 @@ FILE *file = fopen("data.csv", "r"); // Open the CSV file in read mode
         printf("\n");
     }
 
-    fclose(file); // Close the file
-    return EXIT_SUCCESS;
+  
+
+    
+   
+
+    printf("\n=========== USER LIST ===========\n");
+    printf("%-5s | %-20s | %-25s | %-12s\n", "ProjectName", "StartDate", "EndDate", "Status");
+    printf("---------------------------------------------------------------------\n");
+
+    while (fgets(line, sizeof(line),file)) {
+        trim_newline(line);
+
+        if (is_header) { // ข้าม header
+            is_header = 0;
+            continue;
+        }
+
+        // แยกค่าออกมาเป็น token
+        char *n     = strtok(line, ",");
+        char *s    = strtok(NULL, ",");
+        char *e = strtok(NULL, ",");
+        char *stat   = strtok(NULL, ",");
+
+        if (n && s && e && stat) {
+            printf("%-5s | %-20s | %-25s | %-12s\n", n, s, e, stat);
+        }
+    }
+
+    printf("=================================\n");
+    fclose(file);
+}
 
 
     
-}
+
 
 
 
@@ -93,27 +134,12 @@ int main(){
 
 
 
-    FILE *data = fopen("data.csv", "w");
+    FILE *data = fopen("data.csv", "r");
     if (data == NULL) {
         printf("Error: Could not open file.\n");
         return 1;
     }
-
-    int ch;
-    char line[100];
-    while (fgets(line,sizeof(line),data)!=NULL){
-        printf("test\n");
-        printf("a%s",line);    }
-    {
-        /* code */
-    }
-    
-
-    // Write data to the CSV file
-   
-   
-
-    // Close the file
+    fclose(data);
 
 
   
