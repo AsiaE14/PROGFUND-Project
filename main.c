@@ -5,13 +5,18 @@
 #define MAX_LINE_LENGTH 1024
 #define DELIMITER ","
 
+void boom(){
+     FILE *data = fopen("data.csv", "w");
+      fclose(data);
+    printf("All data deleted!");
 
+}
 
 char regis(){
 
     FILE *data = fopen("data.csv", "a");
 char name[100];    
-char start[100];    
+char start[100];
 char end[100];    
 char pocess[100];    
 
@@ -94,6 +99,16 @@ int main(){
         return 1;
     }
 
+    int ch;
+    char line[100];
+    while (fgets(line,sizeof(line),data)!=NULL){
+        printf("test\n");
+        printf("a%s",line);    }
+    {
+        /* code */
+    }
+    
+
     // Write data to the CSV file
    
    
@@ -101,7 +116,7 @@ int main(){
     // Close the file
 
 
-    printf("CSV file created successfully!\n ");
+  
     
 //menu//
      printf("+++++++++++++++++WelcomeTo-ProjectManagementInformationSystem++++++++++++++++++++++++++++\n");
