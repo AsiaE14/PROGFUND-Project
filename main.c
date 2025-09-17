@@ -16,6 +16,22 @@ int ensure_csv_with_header(const char *path) {
     return 0;
 }
 
+int check_num(const char *s){
+
+     if (*s == '\0') return 0;       // ว่างเปล่า ไม่ใช่เลข
+    while (*s) {
+        if (*s < '0' || *s > '9') return 0;
+        s++;
+    }
+    return 1;
+
+}
+
+void pause(){
+     getchar();
+     getchar();
+}
+
 
 
 void boom(){
@@ -114,8 +130,7 @@ void Sall(){
     }
 
     printf("=====================================================================\n");
-     getchar();
-     getchar();
+    
     fclose(file);
 
 
@@ -174,21 +189,25 @@ int main()
              case 1:
             regis();
             printf("\n");
+            pause();
             break;
 
              case 2:
             search();
             printf("\n");
+            pause();
             break;
 
             case 3:
             Sall();
             printf("\n");
+            pause();
             break;
          
             case 4:
             printf("InProcess\n");
             printf("\n");
+            pause();
             break;
         
             case 0:
