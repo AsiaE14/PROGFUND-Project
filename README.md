@@ -71,10 +71,10 @@ Phase 5: Documentation
 📌 How to Compile & Run
 ---------------------------------------------------
 1. Compile:
-   gcc main.c -o project_mgmt
+   gcc main.c -o main.exe
 
 2. Run:
-   ./project_mgmt
+   ./main.exe
 
 3. CSV File:
    The program will create "data.csv" automatically 
