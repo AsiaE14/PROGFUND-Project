@@ -1,6 +1,8 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
 
 #define MAX_LINE_LENGTH 1024
 #define DELIMITER ","
@@ -34,20 +36,7 @@ void pause(){
 
 
 
-void boom(){
-    char a[10];
-    printf("sure?");
-    scanf("%s",&a);
-    if(a =="yes"){
-         FILE *data = fopen("data.csv", "w");
-      fclose(data);
-    printf("All data deleted!");
 
-    }
-    
-    
-
-}
 //register
 void regis(){
 
@@ -66,15 +55,17 @@ char process[100];
 
  printf("Project-Name: ");
     scanf("%s", name);
-    printf("Start-Date: ");
+    printf("Start-Date(YYYY-MM-DD): ");
     scanf("%s", start);
-    printf("End-Date: ");
+    printf("End-Date(YYYY-MM-DD): ");
     scanf("%s", end);
-    printf("Status: ");
-    scanf("%s", process);
+      printf("Status: ");
+    scanf("%s", end);
+
+
    
 
-  fprintf(data, "%s,%s,%s,%s\n", name, start, end, process);
+  fprintf(data, "%s,%s,%s, %s\n", name, start, end, process);
     fclose(data);
     printf("Information edited successfully");
 
@@ -107,17 +98,12 @@ void Sall(){
     int is_header = 1;
 
     printf("\n============================= USER LIST =============================\n");
-    printf("%-20s | %-10s | %-10s | %-12s\n", "ProjectName", "StartDate", "EndDate", "Status");
-    printf("---------------------------------------------------------------------\n");
+  
 
     while (fgets(line, sizeof(line), file)) {
         trim_newline(line);
 
-        if (is_header) {          // ข้าม header
-            is_header = 0;
-            continue;
-        }
-
+    
         
         char *n    = strtok(line, ",");
         char *s    = strtok(NULL, ",");
@@ -125,7 +111,7 @@ void Sall(){
         char *stat = strtok(NULL, ",");
 
         if (n && s && e && stat) {
-            printf("%-20s | %-10s | %-10s | %-12s\n", n, s, e, stat);
+            printf("%-30s | %-10s | %-10s | %-12s\n", n, s, e, stat);
         }
     }
 
@@ -214,9 +200,7 @@ int main()
             running =0;
             break;
             
-            case 6666666666:
-            boom();
-            break; 
+           
         
             default:
             printf("Try-Again!!\n");
