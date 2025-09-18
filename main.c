@@ -36,6 +36,42 @@ void pause(){
 
 
 
+//time sys
+
+time_t make_time(const char *dateStr) {
+    int y, m, d;
+    struct tm t = {0};
+    if (sscanf(dateStr, "%d-%d-%d", &y, &m, &d) == 3) {
+        t.tm_year = y - 1900;
+        t.tm_mon  = m - 1;
+        t.tm_mday = d;
+        return mktime(&t);
+    }
+    return (time_t)-1;
+}
+
+// คำนวณสถานะอัตโนมัติ
+const char* auto_status(const char *start, const char *end) {
+    time_t now = time(NULL);
+    struct tm *today = localtime(&now);
+
+    char todayStr[11];
+    snprintf(todayStr, sizeof(todayStr), "%04d-%02d-%02d",
+             today->tm_year + 1900, today->tm_mon + 1, today->tm_mday);
+
+    time_t tStart = make_time(start);
+    time_t tEnd   = make_time(end);
+    time_t tToday = make_time(todayStr);
+
+    if (tStart == (time_t)-1 || tEnd == (time_t)-1) return "Unknown";
+
+    if (difftime(tToday, tStart) < 0) return "Not Started";
+    else if (difftime(tToday, tEnd) > 0) return "Completed";
+    else return "In Progress";
+}
+
+
+
 
 //register
 void regis(){
@@ -90,6 +126,7 @@ void Sall(){
         printf("Error: cannot create data.csv\n");
         return;
     }
+    
 
     FILE *file = fopen("data.csv", "r");
     if (!file) { perror("fopen"); return; }
@@ -108,10 +145,12 @@ void Sall(){
         char *n    = strtok(line, ",");
         char *s    = strtok(NULL, ",");
         char *e    = strtok(NULL, ",");
-        char *stat = strtok(NULL, ",");
+       // char *stat = strtok(NULL, ",");//
 
-        if (n && s && e && stat) {
-            printf("%-30s | %-10s | %-10s | %-12s\n", n, s, e, stat);
+
+
+        if (n && s && e ) {
+            printf("%-30s | %-10s | %-10s | %-12s\n", n, s, e, auto_status);
         }
     }
 
