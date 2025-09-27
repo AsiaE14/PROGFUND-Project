@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define _USE_64BIT_TIME_T
+
 #include <time.h>
 
 
@@ -115,7 +115,8 @@ int is_valid_date(const char *date) {
 
 
 
-//register
+/*====================================== KEY= Add/Register=====================================================*/
+
 void regis(){
 
     if (ensure_csv_with_header("data.csv") != 0) {
@@ -226,7 +227,7 @@ while (1) {
 
 
 
-         const char *status = auto_status(start, end);// func คำนวณวัน
+const char *status = auto_status(start, end);// func คำนวณวัน
 
 
 
@@ -236,11 +237,54 @@ while (1) {
 
 
 }
+/*====================================== KEY= Search=====================================================*/
+
+
+void search() {
+    char query[100];
+    printf("Enter Project-Name to search: ");
+    if (!fgets(query, sizeof(query), stdin)) return;
+    query[strcspn(query, "\n")] = '\0';
+
+    FILE *file = fopen("data.csv", "r");
+    if (!file) { perror("fopen"); return; }
+
+    char line[MAX_LINE_LENGTH];
+    int found = 0;
+
+    fgets(line, sizeof(line), file); // ข้าม header
+
+    printf("\nSearch Results for '%s':\n", query);
+    printf("----------------------------------------------------------------------\n");
+
+    while (fgets(line, sizeof(line), file)) {
+        trim_newline(line);
+        char copy[MAX_LINE_LENGTH];
+        strcpy(copy, line);
+
+        char *n = strtok(copy, ",");
+        char *s = strtok(NULL, ",");
+        char *e = strtok(NULL, ",");
+        if (n && strstr(n, query)) { // เจอชื่อ
+            const char *real_status = auto_status(s, e);
+            printf("   %-30s | %-10s | %-10s | %-12s\n", n, s, e, real_status);
+            found = 1;
+        }
+    }
+    if (!found) printf("No matching project found!\n");
+    fclose(file);
+}
 
 
 
 
-//short and show 
+
+/*====================================== KEY= Sort and Show=====================================================*/
+
+#define MAX_RECORDS 1000
+#define PAGE_SIZE 15
+
+//edit space in csv
 void trim_newline(char *s) {
     size_t n = strlen(s);
     while (n > 0 && (s[n-1] == '\n' || s[n-1] == '\r')) {
@@ -248,7 +292,89 @@ void trim_newline(char *s) {
     }
 }
 
+// edit date to int easy to sort
+int date_to_int(const char *date) {
+    // แปลง YYYY-MM-DD → YYYYMMDD (int) ใช้สำหรับเปรียบเทียบ
+    char buf[9];
+    strncpy(buf, date, 4);   // year
+    strncpy(buf+4, date+5, 2); // month
+    strncpy(buf+6, date+8, 2); // day
+    buf[8] = '\0';
+    return atoi(buf);
+}
+
+// === Sorting compare functions ===
+int cmp_name(const void *a, const void *b) {
+    char *lineA = *(char **)a;
+    char *lineB = *(char **)b;
+    char copyA[MAX_LINE_LENGTH], copyB[MAX_LINE_LENGTH];
+    strcpy(copyA, lineA); strcpy(copyB, lineB);
+
+     char *nA = strtok(copyA, ",");
+    char *nB = strtok(copyB, ",");
+    return strcmp(nA, nB);
+}
+
+
+
+int cmp_start(const void *a, const void *b) {
+    char *lineA = *(char **)a;
+    char *lineB = *(char **)b;
+    char copyA[MAX_LINE_LENGTH], copyB[MAX_LINE_LENGTH];
+    strcpy(copyA, lineA); strcpy(copyB, lineB);
+
+    strtok(copyA, ","); // name
+    char *sA = strtok(NULL, ",");
+    strtok(copyB, ",");
+    char *sB = strtok(NULL, ",");
+
+    return date_to_int(sA) - date_to_int(sB);
+}
+
+
+
+int cmp_end(const void *a, const void *b) {
+    char *lineA = *(char **)a;
+    char *lineB = *(char **)b;
+    char copyA[MAX_LINE_LENGTH], copyB[MAX_LINE_LENGTH];
+    strcpy(copyA, lineA); strcpy(copyB, lineB);
+
+    strtok(copyA, ","); strtok(NULL, ",");
+    char *eA = strtok(NULL, ",");
+    strtok(copyB, ","); strtok(NULL, ",");
+    char *eB = strtok(NULL, ",");
+
+    return date_to_int(eA) - date_to_int(eB);
+}
+
+int cmp_status(const void *a, const void *b) {
+    // เรียง Completed < In Progress < Not Started
+    char *lineA = *(char **)a;
+    char *lineB = *(char **)b;
+    char copyA[MAX_LINE_LENGTH], copyB[MAX_LINE_LENGTH];
+    strcpy(copyA, lineA); strcpy(copyB, lineB);
+
+    strtok(copyA, ","); char *sA = strtok(NULL, ","); char *eA = strtok(NULL, ",");
+    strtok(copyB, ","); char *sB = strtok(NULL, ","); char *eB = strtok(NULL, ",");
+
+    const char *statA = auto_status(sA, eA);
+    const char *statB = auto_status(sB, eB);
+
+    int valA = (strcmp(statA, "Completed")==0 ? 1 : strcmp(statA, "In Progress")==0 ? 2 : 3);
+    int valB = (strcmp(statB, "Completed")==0 ? 1 : strcmp(statB, "In Progress")==0 ? 2 : 3);
+
+    return valA - valB;
+}
+
+
+
 void Sall(){
+
+
+      int is_header = 1;
+    char *records[MAX_RECORDS];
+   char buf[MAX_LINE_LENGTH];
+    int count = 0;
 
     
     if (ensure_csv_with_header("data.csv") != 0) {
@@ -260,68 +386,89 @@ void Sall(){
     FILE *file = fopen("data.csv", "r");
     if (!file) { perror("fopen"); return; }
 
-    char line[MAX_LINE_LENGTH];
-    int is_header = 1;
-
-    printf("\n============================= USER LIST =============================\n");
-    printf("   %-30s | %-10s | %-10s | %-12s\n", "ProjectName", "StartDate", "EndDate", "Status");
-    printf("----------------------------------------------------------------------\n");
-
-
-
     
   
 
-    while (fgets(line, sizeof(line), file)) {
-        trim_newline(line);
-         if (is_header) { is_header = 0; continue; }
 
-    
-        
-        char *n    = strtok(line, ",");
-        char *s    = strtok(NULL, ",");
-        char *e    = strtok(NULL, ",");
-       // char *stat = strtok(NULL, ",");//
-
-
-
-        if (n && s && e ) {
-            const char *real_status = auto_status(s, e);  //ประกาศและเรียกfunc auto_status
-            printf("   %-30s | %-10s | %-10s | %-12s\n", n, s, e, real_status);
-        }
+ 
+    fgets(buf, sizeof(buf), file); // skip header
+    while (fgets(buf, sizeof(buf), file)) {
+        records[count] = strdup(buf);
+        count++;
     }
-
-    printf("=====================================================================\n");
-    
     fclose(file);
 
+     ////////////////////////////////////////////
+
+      if (count == 0) {
+        printf("No records found.\n");
+        return;
+    }
+
+    // เลือกวิธี sort
+    printf("Sort by: (1=Name, 2=StartDate, 3=EndDate, 4=Status): ");
+    int opt = 1;
+    scanf("%d", &opt);
+    getchar(); // clear enter
+
+    if (opt == 1) qsort(records, count, sizeof(char *), cmp_name);
+    else if (opt == 2) qsort(records, count, sizeof(char *), cmp_start);
+    else if (opt == 3) qsort(records, count, sizeof(char *), cmp_end);
+    else if (opt == 4) qsort(records, count, sizeof(char *), cmp_status);
+
+    // แบ่งหน้า
+    int page = 0;
+    int totalPages = (count + PAGE_SIZE - 1) / PAGE_SIZE;
+    
+
+    while (1) {
+        printf("\n================ PROJECT LIST (Page %d/%d) =================\n", page+1, totalPages);
+        printf("   %-4s | %-30s | %-10s | %-10s | %-12s\n", "No.", "ProjectName", "StartDate", "EndDate", "Status");
+        printf("----------------------------------------------------------------------\n");
+
+        int start = page * PAGE_SIZE;
+        int end = start + PAGE_SIZE;
+        if (end > count) end = count;
+
+        for (int i = start; i < end; i++) {
+            char line[MAX_LINE_LENGTH];
+            strcpy(line, records[i]);
+            trim_newline(line);
+
+            char *n = strtok(line, ",");
+            char *s = strtok(NULL, ",");
+            char *e = strtok(NULL, ",");
+            if (n && s && e) {
+                const char *real_status = auto_status(s, e);
+                printf("   %-4d | %-30s | %-10s | %-10s | %-12s\n",i+1, n, s, e, real_status);
+            }
+        }
+
+        printf("=====================================================================\n");
+        printf("Options: [1=Prev, 2=Next, 0=Exit]: ");
+        int cmd;
+        scanf("%d", &cmd);
+        getchar();
+
+        if (cmd == 2 && page < totalPages-1) page++;
+        else if (cmd == 1 && page > 0) page--;
+        else if (cmd == 0) break;
+    }
+
+    // cleanup
+    for (int i = 0; i < count; i++) free(records[i]);
+}
+
 
 
   
-}
-
-
-    
 
 
 
 
-//search.....
 
-void search(){
-    
-   
+/*====================================== KEY= MAIN=====================================================*/
 
-   
-
-    printf("inpro\n");
-   
-
-}
-
-
-
-// MAIN
 int main()
 {
   
@@ -344,7 +491,7 @@ int main()
     {
 
         printf("+++++++++++++++++WelcomeTo-ProjectManagementInformationSystem++++++++++++++++++++++++++++\n");
-        printf("_________OPTIONS___________\nRegister-New-Project : 1\nEdit-Projects : 2\nShow-all-Projects : 3\nOthers: 4\n Exit : 0\n_________OPTIONS___________\nEnter-your-Options: ");
+        printf("_________OPTIONS___________\nRegister-New-Project : 1\nSearch-And-Edit/Delete-Project : 2\nShow-all-Projects : 3\nOthers: 4\n Exit : 0\n_________OPTIONS___________\nEnter-your-Options: ");
        char buf[10];
         if (fgets(buf, sizeof(buf), stdin)) {
         if (sscanf(buf, "%d", &caser) != 1) {
@@ -370,7 +517,6 @@ int main()
             case 3:
             Sall();
             printf("\n");
-            pause();
             break;
          
             case 4:

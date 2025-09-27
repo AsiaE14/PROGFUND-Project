@@ -32,16 +32,17 @@ In this repository, we provide a sample CSV with 15 records.
 📌 Roadmap (Development Plan)
 ---------------------------------------------------
 Phase 1: Setup (✅ Done)
-- Create repository
-- Implement base code structure
-- Add CSV header creation
+- [x] Create repository
+- [x] Implement base code structure
+- [x] Add CSV header creation
 
 Phase 2: Core Features
-- [x] Add Project (regis)
+- [x] Add Project (regis) ( only 1975 to 2037)
 - [x] Display All Projects (Sall)
-- [ ] Search Project
-- [ ] Edit Project
-- [ ] Delete Project
+- [x] Sorts All Projects (Name, Date,Status)
+- [ ] Search Project (Name, Date,Status)
+- [ ] Edit Project //(Need to make time range more) 📌📌📌(maybe if have time  )
+- [ ] Delete Project 
 
 Phase 3: Advanced Features
 - [ ] Full interactive menu
