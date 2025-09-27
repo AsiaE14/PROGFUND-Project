@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define _USE_64BIT_TIME_T
 #include <time.h>
 
 
@@ -131,25 +132,44 @@ char end[100];
 
 
 while (1) {
+     printf("('exit' or 'q' to cancel)\n");
     printf("Project-Name: ");
-    if (!fgets(name, sizeof(name), stdin)) continue;
+
+
+  
+       
+     if (!fgets(name, sizeof(name), stdin)) continue;
     name[strcspn(name, "\n")] = '\0'; // ลบ newline
+
+     if (strcmp(name, "q") == 0 || strcmp(name, "exit") == 0) {
+        printf(" Cancel registration. Back to menu.\n");
+        return;  
+    }
+  
+  
     if (strlen(name) == 0) {
-        printf("❌ Project-Name cannot be empty. Please try again.\n");
+        printf("ERROR! Project-Name cannot be empty. Please try again.\n");
         continue;
     }
+
+     
+       
     
     break;
 }
 
 while (1) {
+         printf("('exit' or 'q' to cancel)\n");
         printf("Start-Date (YYYY-MM-DD): ");
        
          if (!fgets(start, sizeof(start), stdin)) continue;
     start[strcspn(start, "\n")] = '\0';
 
-        if (!is_valid_date(start) ) {
-    printf("❌ Invalid format! Please try again.\n");
+     if (strcmp(start, "q") == 0 || strcmp(start, "exit") == 0) {
+            printf(" Cancel registration. Back to menu.\n");
+            return;  
+        }else if (!is_valid_date(start) ) {
+    printf(" Invalid format! Please try again.\n");
       continue;
         }
 
@@ -166,19 +186,28 @@ while (1) {
           break;
 }
  while (1) {
+     printf("('exit' or 'q' to cancel)\n");
         printf("End-Date (YYYY-MM-DD): ");
       if (!fgets(end, sizeof(end), stdin)) continue;
     end[strcspn(end, "\n")] = '\0';
-       if (!is_valid_date(end)) {
-    printf("❌ Invalid format! Please try again.\n");
+
+     if (strcmp(start, "q") == 0 || strcmp(start, "exit") == 0) {
+            printf(" Cancel registration. Back to menu.\n");
+            return;  
+        }else if (!is_valid_date(end)) {
+    printf(" Invalid format! Please try again.\n");
       continue;
    
-} 
+}       
 
  char year_str[5];
     strncpy(year_str, end, 4);
     year_str[4] = '\0';
     int year = atoi(year_str);
+     if (year > 2037) {
+        printf("ERROR ! Year must be <= 2037.\n");
+        continue;
+    }
     
    
     
@@ -315,7 +344,7 @@ int main()
     {
 
         printf("+++++++++++++++++WelcomeTo-ProjectManagementInformationSystem++++++++++++++++++++++++++++\n");
-        printf("_________OPTIONS___________\nRegister-New-Project : 1\nSearch-and-Edit-Projects : 2\nShow-all-Projects : 3\nOthers: 4\n Exit : 0\n_________OPTIONS___________\nEnter-your-Options: ");
+        printf("_________OPTIONS___________\nRegister-New-Project : 1\nEdit-Projects : 2\nShow-all-Projects : 3\nOthers: 4\n Exit : 0\n_________OPTIONS___________\nEnter-your-Options: ");
        char buf[10];
         if (fgets(buf, sizeof(buf), stdin)) {
         if (sscanf(buf, "%d", &caser) != 1) {
