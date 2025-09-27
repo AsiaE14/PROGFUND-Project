@@ -69,13 +69,12 @@ const char* auto_status(const char *start, const char *end) {
 
   // ถ้า parse ไม่ได้เลย → Unknown
     if (tStart == (time_t)-1 || tEnd == (time_t)-1) {
-        return "Unknown";
+        return "Error";
     }
 
     if (difftime(tToday, tStart) < 0) return "Not Started";
     else if (difftime(tToday, tEnd) > 0) return "Completed";
-    if (difftime(tToday, tStart) < 0) return "Not Started";
-
+   
     
 
     else return "In Progress";
@@ -104,7 +103,7 @@ int is_valid_date(const char *date) {
 
     // ตรวจสอบจำนวนวันในเดือนคร่าวๆ
     int days_in_month[] = {31,28,31,30,31,30,31,31,30,31,30,31};
-    if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) //เงื่อนไขleay year
+    if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) //เงื่อนไขleap year
         days_in_month[1] = 29; // leap year
 
     if (day > days_in_month[month-1]) return 0;
@@ -158,6 +157,11 @@ while (1) {
     strncpy(year_str, start, 4);
     year_str[4] = '\0';
     int year = atoi(year_str);
+
+    if (year < 1975) {
+        printf("ERROR ! Year must be >= 1975.\n");
+        continue;
+    }
    
           break;
 }
@@ -176,7 +180,9 @@ while (1) {
     year_str[4] = '\0';
     int year = atoi(year_str);
     
-        
+   
+    
+
     time_t tStart = make_time(start);
     time_t tEnd   = make_time(end);
     if (difftime(tEnd, tStart) < 0) {
