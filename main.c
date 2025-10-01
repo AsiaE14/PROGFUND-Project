@@ -1,10 +1,10 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <time.h>
 
-
+#define MAX_RECORDS 1000
+#define PAGE_SIZE 15
 #define MAX_LINE_LENGTH 1024
 #define DELIMITER ","
 
@@ -238,7 +238,64 @@ const char *status = auto_status(start, end);// func คำนวณวัน
 
 }
 /*====================================== KEY= Search=====================================================*/
+//edit space in csv
+void trim_newline(char *s) {
+    size_t n = strlen(s);
+    while (n > 0 && (s[n-1] == '\n' || s[n-1] == '\r')) {
+        s[--n] = '\0';
+    }
+}
 
+void rewrite_csv(char *records[], int count) {
+    FILE *f = fopen("data.csv", "w");
+    if (!f) { perror("fopen"); return; }
+    fputs("ProjectName,StartDate,EndDate,Status\n", f);
+    for (int i = 0; i < count; i++) {
+        fprintf(f, "%s\n", records[i]);
+    }
+    fclose(f);
+}
+
+void edit_record(char *line) {
+    char copy[MAX_LINE_LENGTH];
+    strcpy(copy, line);
+
+    char *n = strtok(copy, ",");
+    char *s = strtok(NULL, ",");
+    char *e = strtok(NULL, ",");
+    char *st = strtok(NULL, ",");
+
+    char newName[100], newStart[20], newEnd[20];
+
+    printf("Edit Project (press Enter to keep old value)\n");
+
+    printf("Name [%s]: ", n);
+    if (fgets(newName, sizeof(newName), stdin)) {
+        if (newName[0] != '\n') {
+            newName[strcspn(newName, "\n")] = '\0';
+            n = newName;
+        }
+    }
+
+    printf("StartDate [%s]: ", s);
+    if (fgets(newStart, sizeof(newStart), stdin)) {
+        if (newStart[0] != '\n') {
+            newStart[strcspn(newStart, "\n")] = '\0';
+            s = newStart;
+        }
+    }
+
+    printf("EndDate [%s]: ", e);
+    if (fgets(newEnd, sizeof(newEnd), stdin)) {
+        if (newEnd[0] != '\n') {
+            newEnd[strcspn(newEnd, "\n")] = '\0';
+            e = newEnd;
+        }
+    }
+
+    const char *status = auto_status(s, e);
+    snprintf(line, MAX_LINE_LENGTH, "%s,%s,%s,%s", n, s, e, status);
+}
 
 void search() {
     char query[100];
@@ -249,30 +306,52 @@ void search() {
     FILE *file = fopen("data.csv", "r");
     if (!file) { perror("fopen"); return; }
 
-    char line[MAX_LINE_LENGTH];
-    int found = 0;
+    char *records[MAX_RECORDS];
+    char buf[MAX_LINE_LENGTH];
+    int count = 0;
 
-    fgets(line, sizeof(line), file); // ข้าม header
+    fgets(buf, sizeof(buf), file); // skip header
+    while (fgets(buf, sizeof(buf), file)) {
+        buf[strcspn(buf, "\n")] = '\0';
+        records[count++] = strdup(buf);
+    }
+    fclose(file);
 
-    printf("\nSearch Results for '%s':\n", query);
-    printf("----------------------------------------------------------------------\n");
-
-    while (fgets(line, sizeof(line), file)) {
-        trim_newline(line);
+    int foundIndex = -1;
+    for (int i = 0; i < count; i++) {
         char copy[MAX_LINE_LENGTH];
-        strcpy(copy, line);
-
+        strcpy(copy, records[i]);
         char *n = strtok(copy, ",");
-        char *s = strtok(NULL, ",");
-        char *e = strtok(NULL, ",");
-        if (n && strstr(n, query)) { // เจอชื่อ
-            const char *real_status = auto_status(s, e);
-            printf("   %-30s | %-10s | %-10s | %-12s\n", n, s, e, real_status);
-            found = 1;
+        if (n && strstr(n, query)) {
+            printf("%d) %s\n", i+1, records[i]);
+            foundIndex = i;
         }
     }
-    if (!found) printf("No matching project found!\n");
-    fclose(file);
+
+    if (foundIndex == -1) {
+        printf("No record found!\n");
+        return;
+    }
+
+    printf("Choose action: 1=Edit, 2=Delete, 0=Cancel: ");
+    int opt; scanf("%d", &opt); getchar();
+
+    if (opt == 1) {
+        edit_record(records[foundIndex]);
+        rewrite_csv(records, count);
+        printf("Record updated!\n");
+    } else if (opt == 2) {
+        for (int i = foundIndex; i < count-1; i++) {
+            records[i] = records[i+1];
+        }
+        count--;
+        rewrite_csv(records, count);
+        printf("Record deleted!\n");
+    } else {
+        printf("Canceled.\n");
+    }
+
+    for (int i = 0; i < count; i++) free(records[i]);
 }
 
 
@@ -281,16 +360,8 @@ void search() {
 
 /*====================================== KEY= Sort and Show=====================================================*/
 
-#define MAX_RECORDS 1000
-#define PAGE_SIZE 15
 
-//edit space in csv
-void trim_newline(char *s) {
-    size_t n = strlen(s);
-    while (n > 0 && (s[n-1] == '\n' || s[n-1] == '\r')) {
-        s[--n] = '\0';
-    }
-}
+
 
 // edit date to int easy to sort
 int date_to_int(const char *date) {
