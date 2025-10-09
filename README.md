@@ -26,7 +26,7 @@ Example (data.csv):
 Website Development,2025-06-01,2025-09-01,In Progress
 Mobile App Launch,2025-05-15,2025-08-15,Completed
 
-In this repository, we provide a sample CSV with 15 records.
+In this repository, we provide a sample CSV with 30 records.
 
 ---------------------------------------------------
 📌 Roadmap (Development Plan)
