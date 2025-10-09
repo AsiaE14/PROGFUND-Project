@@ -40,19 +40,19 @@ Phase 2: Core Features
 - [x] Add Project (regis) ( only 1975 to 2037)
 - [x] Display All Projects (Sall)
 - [x] Sorts All Projects (Name, Date,Status)
-- [ ] Search Project (Name, Date,Status)
-- [ ] Edit Project //(Need to make time range more) 📌📌📌(maybe if have time  )
-- [ ] Delete Project 
+- [x] Search Project (by project Name)
+- [x] Edit Project 
+- [x] Delete Project 
 
 Phase 3: Advanced Features
-- [ ] Full interactive menu
-- [ ] Input validation (date format check)
-- [ ] Secure data deletion (boom)
+- [x] Full interactive menu
+- [x] Input validation (date format,spcial charater check)
+
 
 Phase 4: Testing
-- [ ] Unit tests for each function
+- [x] Unit tests for each function
 - [ ] End-to-End (E2E) test scenario
-- [ ] Linux testing environment
+
 
 Phase 5: Documentation
 - ✅ README / User Manual
@@ -96,7 +96,7 @@ Example:
 > Enter Project-Name: Website
 > Enter Start-Date: 2025-01-01
 > Enter End-Date: 2025-05-01
-> Enter Status: Completed
+
 
 ---------------------------------------------------
 📌 Testing
