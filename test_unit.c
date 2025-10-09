@@ -5,9 +5,9 @@
 #include <assert.h>
 #include <ctype.h>
 #include <time.h>
-#ifndef DATA_FILE
+
 #define DATA_FILE "test_data.csv"
-#endif
+
 
 
 // สีสำหรับแสดงผล

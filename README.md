@@ -51,13 +51,13 @@ Phase 3: Advanced Features
 
 Phase 4: Testing
 - [x] Unit tests for each function
-- [ ] End-to-End (E2E) test scenario
+- [x] End-to-End (E2E) test scenario
 
 
 Phase 5: Documentation
 - ✅ README / User Manual
 - ✅ Example CSV (15+ records)
-- [ ] Usage guide for unit tests
+- [x] Usage guide for unit tests
 
 ---------------------------------------------------
 📌 Progress Status (CSV Records)
@@ -73,12 +73,17 @@ Phase 5: Documentation
 ---------------------------------------------------
 1. Compile:
    gcc main.c -o main.exe
+   gcc -DTEST_MODE -DDATA_FILE=\"test_data.csv\" main.c test_unit.c -o test_unit.exe
+   gcc -DTEST_MODE -DDATA_FILE=\"test_data.csv\" main.c test_e2e.c -o test_e2e.exe 
+
 
 2. Run:
    ./main.exe
+   ./test_unit.exe
+   ./test_e2e.exe
 
 3. CSV File:
-   The program will create "data.csv" automatically 
+   The program will create "data.csv" and "test_data.csv" automatically 
    if it does not exist. 
 
 ---------------------------------------------------
@@ -88,7 +93,8 @@ Menu:
 1 = Add New Project
 2 = Search and Edit Project
 3 = Show All Projects
-4 = Other (in process)
+4 = unit test
+5 = e2e test
 0 = Exit Program
 
 Example:
@@ -108,6 +114,8 @@ Unit Test:
 E2E Test:
 - Add -> Search -> Edit -> Delete -> Show All
 - Confirm CSV updated correctly
+
+Warining : Unit Test & E2E Test use the same test_data.csv file.
 
 ---------------------------------------------------
 📌 Notes

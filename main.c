@@ -3,6 +3,10 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#ifndef DATA_FILE
+#define DATA_FILE "data.csv"
+#endif
+
 
 #define MAX_RECORDS 1000
 #define PAGE_SIZE 15
@@ -161,12 +165,12 @@ printf("=====================================================================\n"
 printf("                              %s%sREGISTER%s\n",BOLD,C,RESET);
 printf("=====================================================================\n");
   printf("('exit' or 'q' to cancel)\n");
-    if (ensure_csv_with_header("data.csv") != 0) {
+    if (ensure_csv_with_header(DATA_FILE) != 0) {
     printf("Error\n");
     return;
     }
 
-    FILE *data = fopen("data.csv", "a");
+    FILE *data = fopen(DATA_FILE, "a");
      if (!data) { perror("fopen"); return; }
 char name[100];    
 char start[100];
@@ -337,8 +341,8 @@ void rewrite_csv(char *records[], int count) {
     fclose(tmp);
 
     // เขียนครบทุกบรรทัดแล้วเท่านั้นถึงแทนที่ไฟล์จริง
-    remove("data.csv");
-    rename("data_tmp.csv", "data.csv");
+    remove(DATA_FILE);
+    rename("data_tmp.csv", DATA_FILE);
 }
 
 char *edit_record(const char *oldRecord) {
@@ -450,7 +454,7 @@ void search() {
     if (!fgets(query, sizeof(query), stdin)) return;
     query[strcspn(query, "\n")] = '\0'; // ลบ newline
 
-    FILE *file = fopen("data.csv", "r");
+    FILE *file = fopen(DATA_FILE, "r");
     if (!file) { perror("fopen"); return; }
 
     char *records[MAX_RECORDS];
@@ -702,13 +706,13 @@ printf("\n");
     
 
     
-    if (ensure_csv_with_header("data.csv") != 0) {
+    if (ensure_csv_with_header(DATA_FILE) != 0) {
         printf("Error: cannot create data.csv\n");
         return;
     }
     
 
-    FILE *file = fopen("data.csv", "r");
+    FILE *file = fopen(DATA_FILE, "r");
     if (!file) { perror("fopen"); return; }
 
     
@@ -789,7 +793,12 @@ printf("\n");
 /*====================================== KEY= UNIT_TEST=====================================================*/
 
 void run_unit_tests() {
-    system("cls||clear");
+
+     system("cls||clear");
+    printf("\nRunning UNIT TESTS...\n\n");
+    system("test_unit.exe");   // บน Windows อาจต้องเป็น "test_unit.exe"
+    
+   /* system("cls||clear");
     printf("\n======================================================\n");
     printf("                    %s%sUNIT TESTS%s\n",BOLD,C,RESET);
     printf("======================================================\n");
@@ -847,12 +856,15 @@ void run_unit_tests() {
     printf("------------------------------------------------------\n");
     printf(" %sPASSED%s: %d |  %sFAILED%s: %d\n",G,RESET, pass,R,RESET, fail);
     printf("======================================================\n");
-   
+   */
 }
 
 /*====================================== KEY= E2E=====================================================*/
 void run_e2e_test() {
     system("cls||clear");
+    printf("\nRunning END-TO-END TESTS...\n\n");
+    system("test_e2e.exe");   // หรือ "test_e2e.exe"
+   /* system("cls||clear");
     printf("\n======================================================\n");
     printf("               %s%sEND-TO-END (E2E) TEST%s\n",BOLD,C,RESET);
     printf("======================================================\n");
@@ -887,7 +899,7 @@ void run_e2e_test() {
     printf("------------------------------------------------------\n");
     printf("%sE2E test finished. test_data.csv remains for inspection.%s\n");
     printf("======================================================\n");
-    pause();
+    pause();*/
 }
 
 
@@ -903,7 +915,7 @@ int main()
         //menu//
     
   
-    if (ensure_csv_with_header("data.csv") != 0) {
+    if (ensure_csv_with_header(DATA_FILE) != 0) {
   
             printf("Error: cannot init CSV\n");
    
