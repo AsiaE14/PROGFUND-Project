@@ -72,14 +72,19 @@ Phase 5: Documentation
 📌 How to Compile & Run
 ---------------------------------------------------
 1. Compile:
+
    gcc main.c -o main.exe
+
    gcc -DTEST_MODE -DTEST_FILE=\"test_data.csv\" main.c test_unit.c -o test_unit.exe
+
    gcc -DTEST_MODE -DTEST_FILE=\"test_data.csv\" main.c test_e2e.c -o test_e2e.exe 
 
 
 2. Run:
    ./main.exe
+
    ./test_unit.exe
+   
    ./test_e2e.exe
 
 3. CSV File:
