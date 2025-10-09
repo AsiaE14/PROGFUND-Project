@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+
 #ifndef DATA_FILE
 #define DATA_FILE "data.csv"
 #endif
@@ -13,6 +14,7 @@
 #define MAX_LINE_LENGTH 1024
 #define DELIMITER ","
 
+const char *GR = "\x1b[90m";  
  const char *R   = "\x1b[31m";
  const char *BR   = "\x1b[91m";
     const char *G = "\x1b[32m";
@@ -54,14 +56,14 @@ int is_valid_name(const char *name) {
     }
 
     if (strlen(name) < 3) {
-        printf("ERROR: Project name must be at least 3 characters.\n");
+        printf("%sERROR: Project name must be at least 3 characters.%s\n",R,RESET);
         return 0;
     }
 
     // ห้ามมีเครื่องหมายที่อาจทำให้ CSV เสีย เช่น , หรือ "
     for (int i = 0; name[i] != '\0'; i++) {
         if (name[i] == ',' || name[i] == '"' || name[i] == ';' || name[i] == '|') {
-            printf("ERROR: Project name contains invalid characters (, \" ; | not allowed).\n");
+            printf("%sERROR: Project name contains invalid characters (, \" ; | not allowed).%s\n",R,RESET);
             return 0;
         }
     }
@@ -164,9 +166,9 @@ void regis(){
 printf("=====================================================================\n");
 printf("                              %s%sREGISTER%s\n",BOLD,C,RESET);
 printf("=====================================================================\n");
-  printf("('exit' or 'q' to cancel)\n");
+  printf("%s('exit' or 'q' to cancel)%s\n",GR,RESET);
     if (ensure_csv_with_header(DATA_FILE) != 0) {
-    printf("Error\n");
+    printf("%sError! No Data.csv%s\n",R,RESET);
     return;
     }
 
@@ -192,7 +194,7 @@ while (1) {
 
    
      if (strcmp(name, "q") == 0 || strcmp(name, "exit") == 0) {
-        printf(" Cancel registration. Back to menu.\n");
+        printf(" %sCancel registration. Back to menu.%s\n",BR,RESET);
         return;  
     }
      if (!is_valid_name(name)) {
@@ -202,7 +204,7 @@ while (1) {
     
   
     if (strlen(name) == 0) {
-        printf("ERROR: Project-Name cannot be empty. Please try again.\n");
+        printf("%sERROR: Project-Name cannot be empty. Please try again.%S\n",R,RESET);
         continue;
     }
 
@@ -221,10 +223,10 @@ while (1) {
     start[strcspn(start, "\n")] = '\0';
 
      if (strcmp(start, "q") == 0 || strcmp(start, "exit") == 0) {
-            printf(" Cancel registration. Back to menu.\n");
+            printf(" %sCancel registration. Back to menu.\n%s",BR,RESET);
             return;  
         }else if (!is_valid_date(start) ) {
-    printf(" Invalid format! Please try again.\n");
+    printf(" %sInvalid format! Please try again.%s\n",R,RESET);
       continue;
         }
 
@@ -234,7 +236,7 @@ while (1) {
     int year = atoi(year_str);
 
     if (year < 1975) {
-        printf("ERROR: Year must be >= 1975.\n");
+        printf("%sERROR: Year must be >= 1975.%s\n",R,RESET);
         continue;
     }
    
@@ -248,10 +250,10 @@ while (1) {
     end[strcspn(end, "\n")] = '\0';
 
      if (strcmp(start, "q") == 0 || strcmp(start, "exit") == 0) {
-            printf(" Cancel registration. Back to menu.\n");
+            printf(" %sCancel registration. Back to menu.%s\n",BR,RESET);
             return;  
         }else if (!is_valid_date(end)) {
-    printf(" Invalid format! Please try again.\n");
+    printf("%s Invalid format! Please try again.%s\n",R,RESET);
       continue;
    
 }       
@@ -261,7 +263,7 @@ while (1) {
     year_str[4] = '\0';
     int year = atoi(year_str);
      if (year > 2037) {
-        printf("ERROR:  Year must be <= 2037.\n");
+        printf("%sERROR:  Year must be <= 2037.%s\n",R,RESET);
         continue;
     }
     
@@ -271,7 +273,7 @@ while (1) {
     time_t tStart = make_time(start);
     time_t tEnd   = make_time(end);
     if (difftime(tEnd, tStart) < 0) {
-        printf(" End-Date must be after Start-Date! Please try again.\n");
+        printf("%s End-Date must be after Start-Date! Please try again.%s\n",R,RESET);
         continue;
     }
 
@@ -286,13 +288,14 @@ while (1) {
 const char *status = auto_status(start, end);// func คำนวณวัน
  system("cls||clear");
   printf("\n");
-
-  
+printf("=====================================================================\n");
+printf("                              %s%sREGISTER%s\n",BOLD,C,RESET);
+printf("=====================================================================\n");  
 printf("  %sProject Name   :%s %s\n",BOLD,RESET,name);
 printf("  %sStart Date     :%s %s\n",BOLD,RESET,start);
 printf("  %sEnd Date       :%s %s\n",BOLD,RESET,end);
 printf("---------------------------------------------------------------------\n");
-printf("[1] Confirm                                                 [2]Cancel\n");
+printf("%s[1]%s Confirm                                                 %s[2]%sCancel\n",Y,RESET,Y,RESET);
  printf("\nEnter your choice: ");
 
 
@@ -302,7 +305,7 @@ if(a == 1 ){
     fprintf(data, "%s,%s,%s,%s\n", name, start, end,status);
     fclose(data);
     printf("\n=====================================================================\n");
-    printf("       %sInformation registered successfully with status:%s %s\n",G,RESET,status);
+    printf("       %sInformation registered successfully with status:%s %s\n",G,status,RESET);
     printf("=====================================================================\n");
     pause();
 }else{
@@ -363,7 +366,7 @@ char *edit_record(const char *oldRecord) {
 
     // ====== Project Name ======
     while (1) {
-        printf("Enter new Project (leave blank = keep): ");
+        printf("Enter new Project %s[Enter to keep %s]%s: ",GR,proj,RESET);
         if (!fgets(newProj, sizeof(newProj), stdin)) continue;
         newProj[strcspn(newProj, "\n")] = '\0';
 
@@ -377,14 +380,14 @@ char *edit_record(const char *oldRecord) {
 
     // ====== Start Date ======
     while (1) {
-        printf("Enter new StartDate (YYYY-MM-DD) [blank = keep %s]: ", start);
+        printf("Enter new StartDate %s(YYYY-MM-DD) %s[Enter to keep %s]%s: ",G,GR, start,RESET);
         if (!fgets(newStart, sizeof(newStart), stdin)) continue;
         newStart[strcspn(newStart, "\n")] = '\0';
 
         if (strlen(newStart) == 0) strcpy(newStart, start);
 
         if (!is_valid_date(newStart)) {
-            printf("Invalid StartDate format! Must be YYYY-MM-DD.\n");
+            printf("%sInvalid StartDate format! Must be YYYY-MM-DD.%s\n",R,RESET);
             continue;
         }
 
@@ -394,7 +397,7 @@ char *edit_record(const char *oldRecord) {
         int year = atoi(year_str);
 
         if (year < 1975) {
-            printf("ERROR: Year must be >= 1975.\n");
+            printf("%sERROR: Year must be >= 1975.%s\n",R,RESET);
             continue;
         }
 
@@ -403,14 +406,14 @@ char *edit_record(const char *oldRecord) {
 
     // ====== End Date ======
     while (1) {
-        printf("Enter new EndDate (YYYY-MM-DD) [blank = keep %s]: ", end);
+        printf("Enter new EndDate %s(YYYY-MM-DD) %s[Enter to keep %s]%s: ",G,GR ,end,RESET);
         if (!fgets(newEnd, sizeof(newEnd), stdin)) continue;
         newEnd[strcspn(newEnd, "\n")] = '\0';
 
         if (strlen(newEnd) == 0) strcpy(newEnd, end);
 
         if (!is_valid_date(newEnd)) {
-            printf("Invalid EndDate format! Must be YYYY-MM-DD.\n");
+            printf("%sInvalid StartDate format! Must be YYYY-MM-DD.%s\n",R,RESET);
             continue;
         }
 
@@ -419,14 +422,14 @@ char *edit_record(const char *oldRecord) {
         year_str[4] = '\0';
         int year = atoi(year_str);
         if (year > 2037) {
-            printf("ERROR: Year must be <= 2037.\n");
+            printf("%sERROR: Year must be <= 2037.%s\n",R,RESET);
             continue;
         }
 
         time_t tStart = make_time(newStart);
         time_t tEnd = make_time(newEnd);
         if (difftime(tEnd, tStart) < 0) {
-            printf("ERROR: EndDate must be after StartDate.\n");
+            printf("%sERROR: EndDate must be after StartDate.%s\n",R,RESET);
             continue;
         }
         break;
@@ -439,7 +442,7 @@ char *edit_record(const char *oldRecord) {
     static char newRecord[MAX_LINE_LENGTH];
     snprintf(newRecord, sizeof(newRecord), "%s,%s,%s,%s", newProj, newStart, newEnd, status);
 
-    printf("\n Record successfully updated! (Status: %s)\n", status);
+    printf("\n %sRecord successfully updated! with Status: %s%s\n", G,status,RESET);
     return newRecord;
 }
 
@@ -450,7 +453,7 @@ void search() {
     printf("=====================================================================\n");
     printf("                              %s%sSEARCH%s\n",BOLD,C,RESET);
     printf("=====================================================================\n");
-    printf("Enter Project-Name to search [blank = Show all]: ");
+    printf("Enter Project-Name to search %s[Enter = Show all]%s: ",GR,RESET);
     if (!fgets(query, sizeof(query), stdin)) return;
     query[strcspn(query, "\n")] = '\0'; // ลบ newline
 
@@ -471,13 +474,13 @@ void search() {
     int foundIndexes[MAX_RECORDS];
     int foundCount = 0;
 
-    // 🔧 Normalize query → lowercase
+    //  Normalize query → lowercase
     char queryLower[100];
     for (int j = 0; query[j] && j < sizeof(queryLower) - 1; j++)
         queryLower[j] = tolower((unsigned char)query[j]);
     queryLower[strlen(query)] = '\0';
 
-    // ✅ ค้นหา (case-insensitive) หรือแสดงทั้งหมดถ้า query ว่าง
+    //  ค้นหา (case-insensitive) หรือแสดงทั้งหมดถ้า query ว่าง
     for (int i = 0; i < count; i++) {
         char copy[MAX_LINE_LENGTH];
         strcpy(copy, records[i]);
@@ -510,9 +513,9 @@ void search() {
     while (1) {
         system("cls||clear");
         printf("\n===============================================================================================\n");
-        printf("                                    SEARCH RESULTS TABLE\n");
+        printf("                                    %sSEARCH RESULTS TABLE%s\n",C,RESET);
         printf("===============================================================================================\n");
-        printf("   %-4s | %-30s | %-10s | %-10s | %-12s\n", "No.", "ProjectName", "StartDate", "EndDate", "Status");
+        printf("  %s %-4s | %-30s | %-10s | %-10s | %-12s%s\n", C,"No.", "ProjectName", "StartDate", "EndDate", "Status",RESET);
         printf("-----------------------------------------------------------------------------------------------\n");
 
         for (int i = 0; i < foundCount; i++) {
@@ -529,14 +532,15 @@ void search() {
             if (!status) status = "-";
 
             if (i == current)
-                printf("%s-> %-4d | %-30s | %-10s | %-10s | %-12s <- %s\n",
-                       G, i + 1, proj, start, end, status, RESET);
+                printf("%s->%s %s%-4d | %-30s | %-10s | %-10s | %-12s %s<- %s\n",
+                       R,RESET,BOLD, i + 1, proj, start, end, status,R, RESET);
             else
-                printf("   %-4d | %-30s | %-10s | %-10s | %-12s\n", i + 1, proj, start, end, status);
+                 printf("   %s%-4d %s| %-30s | %s%-10s | %s%-10s | %s%-12s \n%s",GR,i+1,RESET, proj, Y,start,BR, end, G,status,RESET);
+               // printf("   %-4d | %-30s | %-10s | %-10s | %-12s\n",i+1, proj,start, end,status);
         }
 
         printf("===============================================================================================\n");
-        printf("[1] Up  [2] Down  [3] Select  [0] Cancel\n");
+        printf("%s[1]%s Up  %s[2]%s Down  %s[3]%s Select  %s[0]%s Cancel\n",Y,RESET,Y,RESET,Y,RESET,Y,RESET);
         printf("Choose option: ");
 
         if (!fgets(cmd, sizeof(cmd), stdin)) continue;
@@ -560,20 +564,21 @@ void search() {
     int targetIndex = foundIndexes[current];
     printf("\nYou selected: %s\n", records[targetIndex]);
 
-    // เมนูเลือกการกระทำ
+    // เมนูเลือก
     char bufAct[10];
     int opt = -1;
     while (1) {
-        printf("Choose action: 1=Edit, 2=Delete, 0=Cancel: ");
+        printf("%s[1]%s Edit  %s[2]%s Delete   %s[0]%s Cancel\n",Y,RESET,Y,RESET,Y,RESET);
+        printf("Choose option: ");
         if (!fgets(bufAct, sizeof(bufAct), stdin)) continue;
         bufAct[strcspn(bufAct, "\n")] = '\0';
         if (!check_num(bufAct)) {
-            printf("Invalid input! Please enter 0, 1, or 2.\n");
+            printf("%sInvalid input! Please enter 0, 1, or 2.%s\n",R,RESET);
             continue;
         }
         opt = atoi(bufAct);
         if (opt < 0 || opt > 2) {
-            printf("Out of range! Try again.\n");
+            printf("%sTry again!%s\n",R,RESET);
             continue;
         }
         break;
@@ -582,12 +587,12 @@ void search() {
     if (opt == 1) {
         char *edited = edit_record(records[targetIndex]);
         if (edited == NULL) {
-            printf("Edit canceled or invalid data. No changes made.\n");
+            printf("%sEdit canceled or invalid data. No changes made.%s\n",R,RESET);
         } else {
             free(records[targetIndex]);
             records[targetIndex] = strdup(edited);
             rewrite_csv(records, count);
-            printf("Record updated!\n");
+            printf("%sRecord updated!%s\n",G,RESET);
         }
     } else if (opt == 2) {
         free(records[targetIndex]);
@@ -596,7 +601,7 @@ void search() {
         }
         count--;
         rewrite_csv(records, count);
-        printf("Record deleted!\n");
+        printf("%sRecord deleted!%s\n",R,RESET);
     } else {
         printf("Canceled.\n");
     }
@@ -707,7 +712,7 @@ printf("\n");
 
     
     if (ensure_csv_with_header(DATA_FILE) != 0) {
-        printf("Error: cannot create data.csv\n");
+        printf("%sError: cannot create data.csv%s\n",R,RESET);
         return;
     }
     
@@ -730,12 +735,12 @@ printf("\n");
      ////////////////////////////////////////////
 
       if (count == 0) {
-        printf("No records found.\n");
+        printf("%sNo records found!%s\n",R,RESET);
         return;
     }
 
     // เลือกวิธี sort
-    printf("%sSort by: (1=Name, 2=StartDate, 3=EndDate, 4=Status):%s ",Y,RESET);
+    printf("%sSort by: (1=Name, 2=StartDate, 3=EndDate, 4=Status, Other=.csv list ):%s ",Y,RESET);
     int opt = 1;
     scanf("%d", &opt);
     getchar(); // clear enter
@@ -754,7 +759,7 @@ printf("\n");
          system("cls||clear");
 
         printf("\n================ %sPROJECT LIST (Page %d/%d)%s =================\n", Y,page+1, totalPages,RESET);
-        printf("   %-4s | %-30s | %-10s | %-10s | %-12s\n", "No.", "ProjectName", "StartDate", "EndDate", "Status");
+        printf("  %s %-4s | %-30s | %-10s | %-10s | %-12s%s\n",C, "No.", "ProjectName", "StartDate", "EndDate", "Status",RESET);
         printf("----------------------------------------------------------------------\n");
 
         int start = page * PAGE_SIZE;
@@ -771,7 +776,7 @@ printf("\n");
             char *e = strtok(NULL, ",");
             if (n && s && e) {
                 const char *real_status = auto_status(s, e);
-                printf("   %-4d | %-30s | %-10s | %-10s | %-12s\n",i+1, n, s, e, real_status);
+                printf("   %s%-4d %s| %-30s | %s%-10s | %s%-10s | %s%-12s \n%s",GR,i+1,RESET, n, Y,s,BR, e, G,real_status,RESET);
             }
         }
 
@@ -907,106 +912,95 @@ void run_e2e_test() {
 #ifndef TEST_MODE
 int main()
 {
-  
-    int csa,caser,running =1 ;
-   
-  
-    
-        //menu//
-    
-  
-    if (ensure_csv_with_header(DATA_FILE) != 0) {
-  
-            printf("Error: cannot init CSV\n");
-   
-            return 1;
-    }
    
    
-    while (running)
-{
-    system("cls||clear");
-    printf("\n");
-    printf("=====================================================================\n");
-    printf("            PROJECT MANAGEMENT INFORMATION SYSTEM\n");
-    printf("=====================================================================\n");
-    printf("  [1] > Register                  : Add New Project\n");
-    printf("  [2] > Search                    : Find / Edit / Delete Project\n");
-    printf("  [3] > Show All                  : Display All Projects (Sortable)\n");
-    printf("  [4] > Units Test                : Test Each Important Functions \n");
-    printf("  [5] > Run End-to-End (E2E) Test : Test Project Scenario\n");
-    printf("  [0] > Exit                      : Close the Program\n");
-    printf("---------------------------------------------------------------------\n");
-    printf("  Enter your choice: ");
 
-    char buf[10];
-    if (fgets(buf, sizeof(buf), stdin)) {
-        if (sscanf(buf, "%d", &caser) != 1) {
-            printf(" Invalid option! Try again.\n");
-    
-            continue;
+
+    int caser,running =1 ;
+    if (ensure_csv_with_header(DATA_FILE) != 0) {
+        printf("%sError:%s cannot init CSV\n", R, RESET);
+        return 1;
+    }
+
+    while (running)
+    {
+        system("cls||clear");
+        printf("\n");
+        printf("=====================================================================\n");
+        printf("         %s%s PROJECT MANAGEMENT INFORMATION SYSTEM %s\n", BOLD, C, RESET);
+        printf("=====================================================================\n");
+        printf("  %s[1]%s > %sRegister%s                  %s:Add New Project%s\n", Y, RESET, BOLD, RESET, G, RESET);
+        printf("  %s[2]%s > %sSearch%s                    %s:Find / Edit / Delete Project%s\n", Y, RESET, BOLD, RESET, G, RESET);
+        printf("  %s[3]%s > %sShow All%s                  %s:Display All Projects (Sortable)%s\n", Y, RESET, BOLD, RESET, G, RESET);
+        printf("  %s[4]%s > %sUnits Test%s                %s:Test Each Important Functions%s\n", Y, RESET, BOLD, RESET, G, RESET);
+        printf("  %s[5]%s > %sRun End-to-End (E2E) Test%s %s:Test Full Project Scenario%s\n", Y, RESET, BOLD, RESET, G, RESET);
+        printf("  %s[0]%s > %sExit%s                      %s:Close the Program%s\n", Y, RESET, BOLD, RESET, BR, RESET);
+        printf("---------------------------------------------------------------------\n");
+        printf("  Enter your choice: ");
+
+        char buf[10];
+        if (fgets(buf, sizeof(buf), stdin)) {
+            if (sscanf(buf, "%d", &caser) != 1) {
+                printf("%s Invalid option! Try again.%s\n", BR, RESET);
+                continue;
+            }
+        }
+
+        system("cls||clear");
+
+        switch (caser)
+        {
+            case 1:
+                printf("%s>>> %sRegistering New Project...%s \n\n", G, BOLD, RESET);
+                regis();
+                printf("\nPress Enter to return to menu...");
+                pause();
+                break;
+
+            case 2:
+                printf("%s>>> %sSearching Projects...%s \n\n", C, BOLD, RESET);
+                search();
+                printf("\nPress Enter to return to menu...");
+                pause();
+                break;
+
+            case 3:
+                printf("%s>>> %sDisplaying All Projects...%s \n\n", Y, BOLD, RESET);
+                Sall();
+                printf("\nPress Enter to return to menu...");
+                pause();
+                break;
+
+            case 4:
+                printf("%s>>> %sRunning Unit Tests...%s \n", C, BOLD, RESET);
+                run_unit_tests();
+                printf("\nPress Enter to return to menu...");
+                pause();
+                break;
+            
+            case 5:
+                printf("%s>>> %sRunning End-to-End Tests...%s \n", G, BOLD, RESET);
+                run_e2e_test();
+                printf("\nPress Enter to return to menu...");
+                pause();
+                break;
+
+            case 0:
+                running = 0;
+                break;
+
+            default:
+                printf("%s Invalid option! Try again.%s\n", BR, RESET);
+                pause();
+                break;
         }
     }
 
-    system("cls||clear");
-
-    switch (caser)
-    {
-        case 1:
-            printf(">>> Registering New Project...\n\n");
-            regis();
-            printf("\nPress Enter to return to menu...");
-            pause();
-            break;
-
-        case 2:
-            printf(">>> Searching Projects...\n\n");
-            search();
-            printf("\nPress Enter to return to menu...");
-            pause();
-            break;
-
-        case 3:
-            printf(">>> Displaying All Projects...\n\n");
-            Sall();
-            printf("\nPress Enter to return to menu...");
-            pause();
-            break;
-
-        case 4:
-            printf(">>> Running Units Tests...\n");
-            run_unit_tests();
-            printf("\nPress Enter to return to menu...");
-            pause();
-            break;
-        
-         case 5:
-            printf(">>> Running End-to-End Tests...\n");
-            run_e2e_test();
-            printf("\nPress Enter to return to menu...");
-            pause();
-            break;
-
-        case 0:
-            running = 0;
-            break;
-
-        default:
-            printf("Invalid option! Try again.\n");
-           pause();
-            break;
-    }
-}
-
-printf("\n=====================================================================\n");
-printf("     Exiting... Thank you for using Project Management System!\n");
-printf("=====================================================================\n");
-pause();
-
-
-
+    printf("\n%s=====================================================================%s\n", B, RESET);
+    printf("     %sExiting...%s Thank you for using %sProject Management System!%s \n", C, RESET, BOLD, RESET);
+    printf("%s=====================================================================%s\n", B, RESET);
+    pause();
 
     return 0;
-
 }
 #endif
