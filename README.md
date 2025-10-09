@@ -81,10 +81,11 @@ Phase 5: Documentation
 
 
 2. Run:
+
    ./main.exe
 
    ./test_unit.exe
-   
+
    ./test_e2e.exe
 
 3. CSV File:
