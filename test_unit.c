@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include <time.h>
 
-#define DATA_FILE "test_data.csv"
+#define TEST_FILE "test_data.csv"
 
 
 
@@ -29,7 +29,7 @@ const char* auto_status(const char *start, const char *end);
 int cmp_name(const void *a, const void *b);
 void edit_record(char *record);
 void test_rewrite_csv(char *records[], int count) {
-    FILE *f = fopen("test_data.csv", "w");
+    FILE *f = fopen(TEST_FILE, "w");
     if (!f) {
         perror("Cannot create test_data.csv");
         return;
@@ -111,7 +111,7 @@ int main() {
         strdup("Bigbang,2024-01-01,2024-12-31,Done")
     };
     test_rewrite_csv(lines, 2);
-    FILE *f = fopen("test_data.csv", "r");
+    FILE *f = fopen(TEST_FILE, "r");
     print_result("rewrite_csv created test_data.csv", f != NULL, &pass, &fail);
     if (f) fclose(f);
 

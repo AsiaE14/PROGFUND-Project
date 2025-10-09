@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define DATA_FILE "test_data.csv"
 #define rewrite_csv test_rewrite_csv
 
 
@@ -154,13 +153,13 @@ void test_display(int *pass, int *fail) {
     if (!f) { printf(RED "FAIL: cannot open test CSV\n" RESET); (*fail)++; return; }
     char buf[256];
     int printed = 0;
-    printf(CYAN "\n--- Displaying test_data.csv ---\n" RESET);
+    printf(CYAN "\n-------------- Displaying test_data.csv --------------\n" RESET);
     while (fgets(buf, sizeof(buf), f)) {
         printf("%s", buf);
         printed++;
     }
     fclose(f);
-    printf(CYAN "--------------------------------\n" RESET);
+    printf(CYAN "------------------------------------------------------\n" RESET);
 
     if (printed > 0) {
         printf(GREEN " PASS " RESET "- Display worked.\n");
